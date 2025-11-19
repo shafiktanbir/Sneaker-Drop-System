@@ -13,11 +13,11 @@
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Client as User / Mobile App
-    participant GW as API Gateway (Go HTTP Server)
-    participant Cache as Redis Cluster (Atomic Lua Script)
-    participant WS as WebSocket Stock Broadcast
-    participant DB as PostgreSQL (Async Worker Persist)
+    actor Client as "User / Mobile App"
+    participant GW as "API Gateway (Go HTTP Server)"
+    participant Cache as "Redis Cluster (Atomic Lua Script)"
+    participant WS as "WebSocket Stock Broadcast"
+    participant DB as "PostgreSQL (Async Worker Persist)"
 
     Client->>GW: POST /api/v1/reserve (itemId, userId)
     GW->>Cache: EVALSHA reserveLuaScript (KEYS[1], KEYS[2], TTL=60s)
