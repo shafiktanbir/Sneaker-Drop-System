@@ -1,3 +1,6 @@
+> 💡 **Available for Technical Consulting & High-Concurrency Architecture Audits:**  
+> [Book a 20-min System Teardown](https://shafiktanbir.com/?tab=book) · [Explore Full Case Studies](https://shafiktanbir.com)
+
 # ⚡ Sneaker-Drop-System — High-Concurrency Flash Sale Engine
 
 [![Go](https://img.shields.io/badge/Go-1.22-blue.svg)](https://golang.org)
@@ -72,3 +75,9 @@ curl -X POST http://localhost:8080/api/v1/reserve \
   -H "Content-Type: application/json" \
   -d '{"itemId": "sneaker-nike-v1", "userId": "usr_992"}'
 ```
+
+---
+
+> 💡 **Available for Technical Consulting & High-Concurrency Architecture Audits:**  
+> [Book a 20-min System Teardown](https://shafiktanbir.com/?tab=book) · [Explore Full Case Studies](https://shafiktanbir.com)
+
