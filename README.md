@@ -1,4 +1,7 @@
 
+frontend url : https://sneaker-drop-system.vercel.app
+
+backend url : https://sneaker-drop-system.onrender.com
 
 demonstration url link:https://www.youtube.com/watch?v=MYWAzuVCZRU
 
