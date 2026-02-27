@@ -4,6 +4,9 @@ import { reserve } from '../services/reservationService.js';
 import { getAvailableStock } from '../services/dropService.js';
 import { prisma } from '../lib/prisma.js';
 import { getIo } from '../socket/index.js';
+import { createReservationSchema } from '../validators/reservation.js';
+import { formatZodError } from '../validators/index.js';
+import { logger } from '../lib/logger.js';
 
 const router = Router();
 
@@ -15,14 +18,15 @@ const reserveLimiter = rateLimit({
 
 router.post('/', reserveLimiter, async (req, res) => {
   try {
-    const { dropId, username } = req.body;
-    if (!dropId || !username) {
+    const parsed = createReservationSchema.safeParse(req.body);
+    if (!parsed.success) {
       return res.status(400).json({
         error: 'VALIDATION_ERROR',
-        message: 'dropId and username are required',
+        message: formatZodError(parsed.error),
       });
     }
-    const result = await reserve(parseInt(dropId, 10), username);
+    const { dropId, username } = parsed.data;
+    const result = await reserve(dropId, username);
     if (!result.success) {
       const status =
         result.error === 'OUT_OF_STOCK' || result.error === 'DROP_NOT_FOUND' ? 404 : 400;
@@ -36,7 +40,7 @@ router.post('/', reserveLimiter, async (req, res) => {
 
     res.status(201).json(result);
   } catch (err) {
-    console.error('POST /reservations error:', err);
+    logger.error({ err }, 'POST /reservations error');
     res.status(500).json({ error: 'INTERNAL_ERROR', message: 'Failed to reserve' });
   }
 });
@@ -53,7 +57,7 @@ router.get('/:id', async (req, res) => {
     }
     res.json(reservation);
   } catch (err) {
-    console.error('GET /reservations/:id error:', err);
+    logger.error({ err }, 'GET /reservations/:id error');
     res.status(500).json({ error: 'INTERNAL_ERROR' });
   }
 });

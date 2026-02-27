@@ -89,10 +89,13 @@ export async function reserve(dropId, username) {
       });
 
       return { success: true, reservation };
-    });
+    }, { timeout: 15000 });
   } catch (err) {
     if (err.code === 'P2034' || err.meta?.code === '40P01' || err.meta?.code === '55P03') {
       return { success: false, error: 'CONCURRENT_UPDATE', message: 'Another user just took this item. Please try again.' };
+    }
+    if (err.code === 'P2028' || err.code === 'P2024') {
+      return { success: false, error: 'CONCURRENT_UPDATE', message: 'Server busy. Please try again.' };
     }
     throw err;
   }
@@ -153,10 +156,13 @@ export async function purchase(reservationId, username) {
           User: purchaseRecord.user,
         },
       };
-    });
+    }, { timeout: 15000 });
   } catch (err) {
     if (err.code === 'P2034' || err.meta?.code === '40P01' || err.meta?.code === '55P03') {
       return { success: false, error: 'CONCURRENT_UPDATE', message: 'Another user just took this item. Please try again.' };
+    }
+    if (err.code === 'P2028' || err.code === 'P2024') {
+      return { success: false, error: 'CONCURRENT_UPDATE', message: 'Server busy. Please try again.' };
     }
     throw err;
   }

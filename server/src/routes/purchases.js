@@ -3,6 +3,9 @@ import rateLimit from 'express-rate-limit';
 import { purchase } from '../services/reservationService.js';
 import { getAvailableStock, getDropsWithStock } from '../services/dropService.js';
 import { getIo } from '../socket/index.js';
+import { createPurchaseSchema } from '../validators/purchase.js';
+import { formatZodError } from '../validators/index.js';
+import { logger } from '../lib/logger.js';
 
 const router = Router();
 
@@ -14,14 +17,15 @@ const purchaseLimiter = rateLimit({
 
 router.post('/', purchaseLimiter, async (req, res) => {
   try {
-    const { reservationId, username } = req.body;
-    if (!reservationId || !username) {
+    const parsed = createPurchaseSchema.safeParse(req.body);
+    if (!parsed.success) {
       return res.status(400).json({
         error: 'VALIDATION_ERROR',
-        message: 'reservationId and username are required',
+        message: formatZodError(parsed.error),
       });
     }
-    const result = await purchase(parseInt(reservationId, 10), username);
+    const { reservationId, username } = parsed.data;
+    const result = await purchase(reservationId, username);
     if (!result.success) {
       if (result.error === 'RESERVATION_EXPIRED' || result.error === 'RESERVATION_NOT_FOUND')
         return res.status(410).json(result);
@@ -48,7 +52,7 @@ router.post('/', purchaseLimiter, async (req, res) => {
 
     res.status(201).json(result);
   } catch (err) {
-    console.error('POST /purchases error:', err);
+    logger.error({ err }, 'POST /purchases error');
     res.status(500).json({ error: 'INTERNAL_ERROR', message: 'Failed to complete purchase' });
   }
 });

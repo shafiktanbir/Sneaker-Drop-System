@@ -1,4 +1,5 @@
 import { prisma } from '../lib/prisma.js';
+import { logger } from '../lib/logger.js';
 
 const CHECK_INTERVAL_MS = 5000;
 
@@ -39,7 +40,7 @@ export function startExpiryWorker(getIo, getStockForDrop) {
         io.emit('stockUpdated', { dropId, availableStock });
       }
     } catch (err) {
-      console.error('[ExpiryWorker] Error:', err);
+      logger.error({ err }, '[ExpiryWorker] Error');
     }
   }, CHECK_INTERVAL_MS);
 

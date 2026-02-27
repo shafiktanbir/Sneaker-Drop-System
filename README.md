@@ -56,7 +56,15 @@ curl -X POST http://localhost:3001/api/drops \
   -d '{"name":"Air Jordan 1","price":199.99,"totalStock":100}'
 ```
 
+If `ADMIN_API_KEY` is set in `.env`, add `-H "x-api-key: YOUR_KEY"` to the request.
+
 Optional: `startsAt` and `endsAt` (ISO 8601) control when the drop is active.
+
+### Run Tests
+
+```bash
+cd server && npm run test
+```
 
 ### 5. Start Server
 

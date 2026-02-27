@@ -43,6 +43,7 @@ Step-by-step instructions to deploy the Sneaker Drop system.
    | `DATABASE_URL` | Your Neon **pooled** connection URL |
    | `DIRECT_URL` | Your Neon **direct** connection URL |
    | `CORS_ORIGIN` | Leave empty for now; add after Vercel deploy (e.g. `https://your-app.vercel.app`) |
+   | `ADMIN_API_KEY` | Optional. If set, POST /api/drops requires `x-api-key` header. Omit for local-like behavior. |
    | `NODE_ENV` | `production` (optional; Render may set this) |
 
 6. Click **Create Web Service**
@@ -97,6 +98,14 @@ curl -X POST https://YOUR-RENDER-URL.onrender.com/api/drops \
   -d '{"name":"Air Jordan 1","price":199.99,"totalStock":100}'
 ```
 
+If `ADMIN_API_KEY` is set, add the header:
+```bash
+curl -X POST https://YOUR-RENDER-URL.onrender.com/api/drops \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: YOUR_ADMIN_API_KEY" \
+  -d '{"name":"Air Jordan 1","price":199.99,"totalStock":100}'
+```
+
 Or use Postman / Thunder Client with the same request.
 
 ---
@@ -121,6 +130,10 @@ Or use Postman / Thunder Client with the same request.
 - Ensure `npx prisma migrate deploy` succeeds (migrations run on each deploy)
 - Verify `DATABASE_URL` and `DIRECT_URL` are correct
 
+### INTERNAL_ERROR or P2024 under load
+- Add `connection_limit=20&pool_timeout=30` to your `DATABASE_URL` query string (e.g. `?sslmode=require&connection_limit=20&pool_timeout=30`)
+- This reduces connection pool exhaustion when many users reserve concurrently
+
 ---
 
 ## Environment Variables Summary
@@ -130,6 +143,7 @@ Or use Postman / Thunder Client with the same request.
 | `DATABASE_URL` | Render | Yes |
 | `DIRECT_URL` | Render | Yes |
 | `CORS_ORIGIN` | Render | Yes (your Vercel URL) |
+| `ADMIN_API_KEY` | Render | No (if set, protects POST /api/drops) |
 | `VITE_API_URL` | Vercel | Yes |
 | `VITE_SOCKET_URL` | Vercel | Yes |
 
