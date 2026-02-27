@@ -19,14 +19,45 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 const app = express();
 const httpServer = createServer(app);
 
-const corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:5173';
+// CORS: comma-separated origins; supports wildcard e.g. https://*.vercel.app for preview deployments
+const corsOriginRaw = process.env.CORS_ORIGIN || 'http://localhost:5173';
+const corsOrigins = corsOriginRaw.split(',').map((o) => o.trim()).filter(Boolean);
+
+function isOriginAllowed(origin) {
+  if (!origin) return true; // Same-origin or non-browser (curl, etc.)
+  return corsOrigins.some((allowed) => {
+    if (allowed.includes('*')) {
+      const pattern = allowed.replace(/\./g, '\\.').replace(/\*/g, '.*');
+      return new RegExp(`^${pattern}$`).test(origin);
+    }
+    return origin === allowed;
+  });
+}
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (isOriginAllowed(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+};
+
 const io = new Server(httpServer, {
-  cors: { origin: corsOrigin.split(',').map((o) => o.trim()), credentials: true },
+  cors: {
+    origin: (origin, callback) => {
+      if (isOriginAllowed(origin)) callback(null, true);
+      else callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+  },
   transports: ['websocket', 'polling'],
 });
 setIo(io);
 
-app.use(cors({ origin: corsOrigin.split(',').map((o) => o.trim()) }));
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use('/api/drops', dropsRouter);
@@ -52,6 +83,10 @@ async function main() {
 
     httpServer.listen(PORT, () => {
       console.log(`[Server] Running at http://localhost:${PORT}`);
+      console.log(`[CORS] Allowed origins: ${corsOriginRaw}`);
+      if (process.env.NODE_ENV === 'production' && corsOriginRaw.includes('localhost')) {
+        console.warn('[CORS] WARNING: CORS_ORIGIN contains localhost. Set it to your production frontend URL (e.g. https://your-app.vercel.app) in Render.');
+      }
     });
   } catch (err) {
     console.error('[Server] Startup failed:', err);
