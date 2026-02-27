@@ -1,0 +1,14 @@
+{
+  "name": "sneaker-drop",
+  "private": true,
+  "scripts": {
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev",
+    "migrate": "cd server && npm run migrate",
+    "studio": "cd server && npm run studio",
+    "dev": "concurrently -n server,client,studio -c blue,magenta,cyan \"npm run server\" \"npm run client\" \"npm run studio\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

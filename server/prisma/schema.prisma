@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  username      String         @unique @db.VarChar(50)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  reservations  Reservation[]
+  purchases     Purchase[]
+
+  @@map("Users")
+}
+
+model Drop {
+  id            Int            @id @default(autoincrement())
+  name          String         @db.VarChar(255)
+  price         Decimal        @db.Decimal(10, 2)
+  totalStock    Int
+  startsAt      DateTime?
+  endsAt        DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  reservations  Reservation[]
+  purchases     Purchase[]
+
+  @@map("Drops")
+}
+
+model Reservation {
+  id        Int              @id @default(autoincrement())
+  dropId    Int
+  userId    Int
+  status    ReservationStatus @default(active)
+  expiresAt DateTime
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  drop      Drop             @relation(fields: [dropId], references: [id], onDelete: Cascade)
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purchase  Purchase?
+
+  @@map("Reservations")
+}
+
+enum ReservationStatus {
+  active
+  completed
+  expired
+}
+
+model Purchase {
+  id            Int         @id @default(autoincrement())
+  dropId        Int
+  userId        Int
+  reservationId Int         @unique
+  amountPaid    Decimal     @db.Decimal(10, 2)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  drop          Drop        @relation(fields: [dropId], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+
+  @@map("Purchases")
+}
