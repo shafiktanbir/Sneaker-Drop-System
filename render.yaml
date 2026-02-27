@@ -1,12 +1,13 @@
 # Render.com Blueprint - Backend deployment
 # Deploy: Connect repo -> Render detects render.yaml
+# PORT is automatically provided by Render - do not override
 services:
   - type: web
     name: sneaker-drop-api
     runtime: node
     rootDir: server
     buildCommand: npm install && npx prisma generate
-    startCommand: npm run migrate && node src/index.js
+    startCommand: npx prisma migrate deploy && node src/index.js
     envVars:
       - key: NODE_ENV
         value: production
@@ -16,5 +17,3 @@ services:
         sync: false
       - key: CORS_ORIGIN
         sync: false
-      - key: PORT
-        value: 3001

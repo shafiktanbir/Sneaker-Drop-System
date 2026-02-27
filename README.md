@@ -1,3 +1,7 @@
+
+
+demonstration url link:https://www.youtube.com/watch?v=MYWAzuVCZRU
+
 # Limited Edition Sneaker Drop - Inventory System
 sneaker drop system
 
@@ -106,6 +110,8 @@ Only one transaction can hold the lock at a time, so concurrent requests are ser
 ---
 
 ## Deployment
+
+📖 **Full step-by-step guide:** [DEPLOYMENT.md](DEPLOYMENT.md)
 
 **Important**: Vercel serverless does not support WebSockets. Deploy frontend and backend separately:
 
