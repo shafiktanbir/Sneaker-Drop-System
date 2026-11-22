@@ -1,0 +1,3 @@
+client/** linguist-vendored
+server/** linguist-vendored
+tests/load/** linguist-vendored
