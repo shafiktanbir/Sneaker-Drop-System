@@ -1,5 +1,6 @@
 # ⚡ Sneaker-Drop-System — High-Concurrency Flash Sale Engine
 
+[![Go Engine CI](https://github.com/shafiktanbir/Sneaker-Drop-System/actions/workflows/ci.yml/badge.svg)](https://github.com/shafiktanbir/Sneaker-Drop-System/actions/workflows/ci.yml)
 [![Go](https://img.shields.io/badge/Go-1.22-blue.svg)](https://golang.org)
 [![Redis](https://img.shields.io/badge/Redis-v7.2-red.svg)](https://redis.io)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
